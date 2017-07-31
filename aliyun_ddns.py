@@ -91,22 +91,15 @@ def update_yun(ip):
 def get_curr_ip():
 	headers = {'content-type': 'text/html',
            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
-	resp = requests.get('http://ip.chinaz.com/', headers=headers)
+	resp = requests.get('http://ip.cn/', headers=headers)
 	soup = BS(resp.content, 'html.parser')
-	ip_tag = soup.find_all('p', class_='getlist')[0]
-
-	ip = None
-	for string in ip_tag.strings:
-		if re.match(r'(\d{1,3}\.?){4}', string):
-			ip = string.strip()
-			break
-	return ip
+	return soup.code.string.strip()
 
 def get_lastest_local_ip():
 	"""
 	获取最近一次保存在本地的ip
 	"""
-	with open(LOCAL_FILE, 'w+') as f:
+	with open(LOCAL_FILE, 'r') as f:
 		last_ip = f.readline()
 	return last_ip
 
