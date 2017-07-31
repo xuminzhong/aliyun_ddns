@@ -10,6 +10,8 @@ import urllib
 import hashlib
 import hmac
 
+from bs4 import BeautifulSoup as BS
+
 
 REQUEST_URL = 'https://alidns.aliyuncs.com/'
 LOCAL_FILE = 'ip.txt'
@@ -87,9 +89,18 @@ def update_yun(ip):
 		print result
 
 def get_curr_ip():
-	resp = requests.get('http://1212.ip138.com/ic.asp')
-	print resp.content
-	return re.findall(r'\[(.*)\]', resp.content)[0]
+	headers = {'content-type': 'text/html',
+           'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
+	resp = requests.get('http://ip.chinaz.com/', headers=headers)
+	soup = BS(resp.content, 'html.parser')
+	ip_tag = soup.find_all('p', class_='getlist')[0]
+
+	ip = None
+	for string in ip_tag.strings:
+		if re.match(r'(\d{1,3}\.?){4}', string):
+			ip = string.strip()
+			break
+	return ip
 
 def get_lastest_local_ip():
 	"""
@@ -101,11 +112,14 @@ def get_lastest_local_ip():
 
 if __name__ == '__main__':
 	ip = get_curr_ip()
-	last_ip = get_lastest_local_ip()
-	print ip, last_ip
-	if ip != last_ip:
-		print u'先写到本地...'
-		with open(LOCAL_FILE, 'wb') as f:
-			f.write(ip)
-		print u'修改云解析...'
-		update_yun(ip)
+	if not ip:
+		print u'获取ip失败，请稍后重试~'
+	else:
+		last_ip = get_lastest_local_ip()
+		print ip, last_ip
+		if ip != last_ip:
+			print u'先写到本地...'
+			with open(LOCAL_FILE, 'wb') as f:
+				f.write(ip)
+			print u'修改云解析...'
+			update_yun(ip)
