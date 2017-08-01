@@ -9,6 +9,7 @@ from datetime import datetime
 import urllib
 import hashlib
 import hmac
+import time
 
 from bs4 import BeautifulSoup as BS
 
@@ -89,11 +90,13 @@ def update_yun(ip):
 		print result
 
 def get_curr_ip():
-	headers = {'content-type': 'text/html',
-           'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
-	resp = requests.get('http://ip.cn/', headers=headers)
+	headers = {
+		'content-type': 'text/html',
+		'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'
+	}
+	resp = requests.get('http://www.baidu.com/s?word=ip&_t={}'.format(int(time.time()), headers=headers))
 	soup = BS(resp.content, 'html.parser')
-	return soup.code.string.strip()
+	return soup.select('#1')[0]['fk']
 
 def get_lastest_local_ip():
 	"""
