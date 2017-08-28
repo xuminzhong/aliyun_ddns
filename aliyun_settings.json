@@ -1,5 +1,6 @@
 {
 	"access_key": "xxx",
 	"access_secret": "xxx",
-	"domain": "xxx.xxx"
+	"domain": "xxx.xxx",
+	"RR": ["@", "www", "..."]
 }

@@ -1,7 +1,7 @@
 新功能和改动
 
-1. 支持强制更新
-2. 支持更新指定二级域名
+1. 支持强制更新 (使用 update 参数)
+2. 支持更新指定二级域名 ( update xxx yyy zzz )
 3. 兼容 Python2.6
 4. 获取IP从百度改成 ipify.org，可以不用依赖 BeautifulSoup
 5. 获取本地IP前判断文件是否存在
