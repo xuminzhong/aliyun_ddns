@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 import urllib
 import hashlib
+import base64
 import hmac
 import time
 
@@ -53,8 +54,11 @@ def get_signed_params(http_method, params, settings):
     # 4、构造需要签名的字符串
     str_to_sign = http_method + "&" + urllib.quote_plus("/") + "&" + urllib.quote_plus(query_params)
     # 5、计算签名
-    signature = hmac.new(str(settings['access_secret'] + '&'), str(str_to_sign), hashlib.sha1).digest().encode('base64').strip(
-        '\n')  # 此处注意，必须用str转换，因为hmac不接受unicode，大坑！！！
+    #signature = hmac.new(str(settings['access_secret'] + '&'), str(str_to_sign), hashlib.sha1).digest().encode('base64').strip('\n')  # 此处注意，必须用str转换，因为hmac不接受unicode，大坑！！！
+    key = (settings['access_secret'] + '&').encode('utf-8')
+    data = str_to_sign.encode('utf-8')
+    signature = hmac.new(key, data, hashlib.sha1).digest()  # 此处注意，必须用str转换，因为hmac不接受unicode，大坑！！！
+    signature = base64.b64encode(signature)
     # 6、将签名加入参数中
     params['Signature'] = signature
 
@@ -134,7 +138,7 @@ if __name__ == '__main__':
                 print 'use: {0}'.format(DEF_RR)
 
             with open(LOCAL_FILE, 'wb') as f:
-                f.write(ip)
+                f.write(ip.encode())
             update_yun(ip)
         else:
             print u'unchanged, no need update.'
